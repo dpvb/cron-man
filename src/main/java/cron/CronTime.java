@@ -54,15 +54,6 @@ class CronTime {
         final int lowerBound = timeType.getLowerBound();
         final int upperBound = timeType.getUpperBound();
 
-        // Single check
-        if (expression.length() == 1) {
-            int i = Integer.parseInt(expression);
-            if (numOutOfRange(i, lowerBound, upperBound)) {
-                throw new CronParseException("Value is invalid: "+ i);
-            }
-            return ExpressionType.SINGLE;
-        }
-
         // List Check
         if (expression.contains(",")) {
             final List<String> split = Arrays.stream(expression.split(",")).toList();
@@ -108,7 +99,12 @@ class CronTime {
             return ExpressionType.STEP;
         }
 
-        throw new CronParseException(expression + " does not match a valid cron expression type");
+        // Single check
+        int i = Integer.parseInt(expression);
+        if (numOutOfRange(i, lowerBound, upperBound)) {
+            throw new CronParseException("Value is invalid: "+ i);
+        }
+        return ExpressionType.SINGLE;
     }
 
     private boolean numOutOfRange(int value, int lower, int upper) {
